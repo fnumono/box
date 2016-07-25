@@ -16,7 +16,11 @@ class AssetsController < ApplicationController
 
   # GET /assets/new
   def new
-    @asset = current_user.assets.new
+    @asset = current_user.assets.build
+    if params[:folder_id]
+      @current_folder = current_user.folders.find(params[:folder_id])
+      @asset.folder_id = @current_folder.id
+    end
   end
 
   # GET /assets/1/edit
@@ -28,14 +32,16 @@ class AssetsController < ApplicationController
   def create
     @asset = current_user.assets.new(asset_params)
 
-    respond_to do |format|
-      if @asset.save
-        format.html { redirect_to assets_url, notice: 'Asset was successfully created.' }
-        format.json { render :show, status: :created, location: @asset }
+    if @asset.save
+      flash[:notice] = "Successfully uploaded_file"
+
+      if @asset.folder #checking if we have a parent folder for this file
+        redirect_to browse_path(@asset.folder)
       else
-        format.html { render :new }
-        format.json { render json: @asset.errors, status: :unprocessable_entity }
+        redirect_to root_url
       end
+    else
+      render :action => 'new'
     end
   end
 
