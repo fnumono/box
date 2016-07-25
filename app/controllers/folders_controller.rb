@@ -16,6 +16,12 @@ class FoldersController < ApplicationController
   # GET /folders/newr
   def new
     @folder = current_user.folders.new
+
+    if params[:folder_id]
+      @current_folder = current_user.folders.find(params[:folder_id])
+
+      @folder.parent_id = @current_folder.id
+    end
   end
 
   # GET /folders/1/edit
@@ -28,15 +34,18 @@ class FoldersController < ApplicationController
   def create
     @folder = current_user.folders.new(folder_params)
 
-    respond_to do |format|
-      if @folder.save
-        format.html { redirect_to @folder, notice: 'Folder was successfully created.' }
-        format.json { render :show, status: :created, location: @folder }
+    if @folder.save 
+      flash[:notice] = "Successfully created folder"
+
+      if @folder.parent
+        redirect_to browse_path(@folder.parent)
       else
-        format.html { render :new }
-        format.json { render json: @folder.errors, status: :unprocessable_entity }
+        redirect_to root_url
       end
+    else
+      render :action => 'new'
     end
+    
   end
 
   # PATCH/PUT /folders/1
