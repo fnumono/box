@@ -19,14 +19,15 @@ class FoldersController < ApplicationController
 
     if params[:folder_id]
       @current_folder = current_user.folders.find(params[:folder_id])
-
       @folder.parent_id = @current_folder.id
     end
+
   end
 
   # GET /folders/1/edit
   def edit
-    @folder = current_user.folders.find(params[:id])
+    @folder = current_user.folders.find(params[:folder_id])
+    @current_folder = @folder.parent
   end
 
   # POST /folders
@@ -67,17 +68,26 @@ class FoldersController < ApplicationController
   # DELETE /folders/1.json
   def destroy
     @folder = current_user.folders.find(params[:id])
+    @parent_folder = @folder.parent
     @folder.destroy
-    respond_to do |format|
-      format.html { redirect_to folders_url, notice: 'Folder was successfully destroyed.' }
-      format.json { head :no_content }
+
+    flash[:notice]="Successfully deleted the folder and all the content."
+
+    if @parent_folder
+      redirect_to browse_path(@parent_folder)
+    else
+      redirect_to root_url
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_folder
-      @folder = Folder.find(params[:id])
+      if params[:folder_id]
+        @folder = current_user.folders.find(params[:folder_id])
+      else
+        @folder = current_user.folders.find(params[:id])
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

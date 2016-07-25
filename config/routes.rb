@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   match "browse/:folder_id/new_file" => "assets#new", :via => [:get], :as => "new_sub_file"
 
+  match "browse/:folder_id/rename" => "folders#edit", :via => [:get], :as => "rename_folder"
+
 
   #match 'gallery_:id' => 'gallery#show', :via => [:get], :as => 'gallery_show'
   # The priority is based upon order of creation: first created -> highest priority.
