@@ -53,15 +53,16 @@ class FoldersController < ApplicationController
   # PATCH/PUT /folders/1.json
   def update
     @folder = current_user.folders.find(params[:id])
-    respond_to do |format|
+    
       if @folder.update(folder_params)
-        format.html { redirect_to @folder, notice: 'Folder was successfully updated.' }
-        format.json { render :show, status: :ok, location: @folder }
-      else
-        format.html { render :edit }
-        format.json { render json: @folder.errors, status: :unprocessable_entity }
+        if @folder.parent
+          redirect_to browse_path(@folder.parent)
+        else
+          redirect_to root_url
+        end
+        # format.html { redirect_to root_url, notice: 'Folder was successfully updated.' }
+        # format.json { render :shows: :ok, location: @folder }
       end
-    end
   end
 
   # DELETE /folders/1
