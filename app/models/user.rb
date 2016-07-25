@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   has_many :assets
+  has_many :folders
 
   def configure_permitted_parameters
             devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:name, :email, :password) }
